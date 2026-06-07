@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const navItems = [
   { href: "/", label: "Inicio" },
@@ -21,9 +22,14 @@ export function AppShell({ children }: AppShellProps) {
         <aside className="border-b border-border bg-surface lg:fixed lg:inset-y-0 lg:left-0 lg:w-[280px] lg:border-b-0 lg:border-r">
           <div className="flex h-full flex-col p-4 lg:p-5">
             <Link href="/" className="flex items-center gap-3 px-2 py-2">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-sm font-semibold text-white">
-                M
-              </span>
+              <Image
+                src="/brand/minto-mark.png"
+                alt="Minto"
+                width={36}
+                height={36}
+                className="h-9 w-9 rounded-xl"
+                priority
+              />
               <span>
                 <span className="block text-base font-semibold tracking-[0] text-ink">
                   Minto

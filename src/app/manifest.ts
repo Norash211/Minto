@@ -1,0 +1,28 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "Minto",
+    short_name: "Minto",
+    description: "Sistema financiero personal para claridad financiera.",
+    start_url: "/",
+    scope: "/",
+    display: "standalone",
+    background_color: "#0B1020",
+    theme_color: "#0B1020",
+    icons: [
+      {
+        src: "/icon.png",
+        sizes: "96x96",
+        type: "image/png",
+        purpose: "maskable",
+      },
+      {
+        src: "/apple-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+        purpose: "any",
+      },
+    ],
+  };
+}
