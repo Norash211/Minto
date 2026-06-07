@@ -47,11 +47,16 @@ export type Debt = {
 
 export type LoanGiven = {
   id: string;
-  borrower: string;
-  note: string;
-  amountOwed: MoneyAmount;
-  expectedRepaymentDate: string;
-  status: "expected" | "late" | "repaid";
+  personName: string;
+  totalAmount: MoneyAmount;
+  amountPaid: MoneyAmount;
+  remainingAmount: MoneyAmount;
+  loanDate: string;
+  expectedIncomeDate: string;
+  estimatedFullRepaymentDate: string;
+  paymentFrequency: "weekly" | "biweekly" | "monthly" | "custom";
+  status: "active" | "late" | "completed";
+  notes: string;
 };
 
 export type MonthlyForecast = {

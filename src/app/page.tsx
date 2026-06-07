@@ -35,7 +35,7 @@ export default function HomePage() {
           </p>
         </header>
 
-        <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
+        <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="space-y-6">
             <MoneySummary
               totalMoney={totalMoney}
@@ -60,7 +60,7 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
                 {buckets.slice(0, 4).map((bucket) => (
                   <BucketCard key={bucket.id} bucket={bucket} />
                 ))}

@@ -1,33 +1,21 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { LoanGivenCard } from "@/components/minto/loan-given-card";
-import { LoansGivenSummary } from "@/components/minto/loans-given-summary";
-import { loansGiven, totalLoansGiven } from "@/lib/mock-data";
+import { LoansGivenManager } from "@/components/minto/loans-given-manager";
+import { loansGiven } from "@/lib/mock-data";
 
 export default function LoansGivenPage() {
   return (
     <AppShell>
       <section className="mb-6">
-        <p className="text-sm font-medium text-muted">Dinero prestado</p>
+        <p className="text-sm font-medium text-secondary">Dinero prestado</p>
         <h1 className="mt-1 text-2xl font-semibold tracking-[0] text-ink">
-          Dinero esperado, todavía no disponible
+          Dinero prestado
         </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
+          Dinero que te deben, pero que todavía no está disponible.
+        </p>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
-        <LoansGivenSummary totalLoansGiven={totalLoansGiven} />
-
-        {loansGiven.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
-            {loansGiven.map((loan) => (
-              <LoanGivenCard key={loan.id} loan={loan} />
-            ))}
-          </div>
-        ) : (
-          <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted">
-            No hay dinero prestado registrado.
-          </p>
-        )}
-      </div>
+      <LoansGivenManager initialLoans={loansGiven} />
     </AppShell>
   );
 }

@@ -134,19 +134,42 @@ export const debts: Debt[] = [
 export const loansGiven: LoanGiven[] = [
   {
     id: "loan-friend",
-    borrower: "Sofia",
-    note: "Apoyo temporal",
-    amountOwed: 3500,
-    expectedRepaymentDate: "2026-06-20",
-    status: "expected",
+    personName: "Sofia",
+    totalAmount: 8000,
+    amountPaid: 4500,
+    remainingAmount: 3500,
+    loanDate: "2026-05-10",
+    expectedIncomeDate: "2026-06-20",
+    estimatedFullRepaymentDate: "2026-07-20",
+    paymentFrequency: "monthly",
+    status: "active",
+    notes: "Apoyo temporal",
   },
   {
     id: "loan-family",
-    borrower: "Carlos",
-    note: "Anticipo familiar",
-    amountOwed: 7200,
-    expectedRepaymentDate: "2026-07-01",
-    status: "expected",
+    personName: "Carlos",
+    totalAmount: 12000,
+    amountPaid: 4800,
+    remainingAmount: 7200,
+    loanDate: "2026-04-18",
+    expectedIncomeDate: "2026-06-01",
+    estimatedFullRepaymentDate: "2026-09-01",
+    paymentFrequency: "monthly",
+    status: "late",
+    notes: "Anticipo familiar",
+  },
+  {
+    id: "loan-coworker",
+    personName: "Mariana",
+    totalAmount: 2500,
+    amountPaid: 2500,
+    remainingAmount: 0,
+    loanDate: "2026-03-02",
+    expectedIncomeDate: "2026-05-15",
+    estimatedFullRepaymentDate: "2026-05-15",
+    paymentFrequency: "custom",
+    status: "completed",
+    notes: "Liquidado",
   },
 ];
 
@@ -210,5 +233,5 @@ export const totalDebtOwed = debts
   .filter((debt) => debt.status !== "paid")
   .reduce((total, debt) => total + debt.totalOwed, 0);
 export const totalLoansGiven = loansGiven
-  .filter((loan) => loan.status !== "repaid")
-  .reduce((total, loan) => total + loan.amountOwed, 0);
+  .filter((loan) => loan.status !== "completed")
+  .reduce((total, loan) => total + loan.remainingAmount, 0);

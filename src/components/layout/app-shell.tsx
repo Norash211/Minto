@@ -16,10 +16,10 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <main className="min-h-screen bg-background text-ink">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:flex-row lg:px-8 lg:py-6">
-        <aside className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64 lg:shrink-0">
-          <div className="flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-soft">
+    <main className="min-h-screen w-full bg-background text-ink">
+      <div className="flex min-h-screen w-full flex-col lg:flex-row">
+        <aside className="border-b border-border bg-surface lg:fixed lg:inset-y-0 lg:left-0 lg:w-[280px] lg:border-b-0 lg:border-r">
+          <div className="flex h-full flex-col p-4 lg:p-5">
             <Link href="/" className="flex items-center gap-3 px-2 py-2">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-sm font-semibold text-white">
                 M
@@ -32,7 +32,7 @@ export function AppShell({ children }: AppShellProps) {
               </span>
             </Link>
 
-            <nav className="mt-6 flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+            <nav className="mt-4 flex gap-1 overflow-x-auto lg:mt-8 lg:flex-col lg:overflow-visible">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -53,7 +53,9 @@ export function AppShell({ children }: AppShellProps) {
           </div>
         </aside>
 
-        <section className="min-w-0 flex-1">{children}</section>
+        <section className="min-w-0 flex-1 px-4 py-5 sm:px-6 lg:ml-[280px] lg:px-8 lg:py-7">
+          {children}
+        </section>
       </div>
     </main>
   );

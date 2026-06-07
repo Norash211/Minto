@@ -46,7 +46,7 @@ export function MoneySummary({
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3 2xl:grid-cols-3">
         {items.map((item) => (
           <div key={item.label} className="rounded-2xl border border-border bg-surface p-4">
             <div className={`mb-4 h-1 w-8 rounded-full ${item.accent}`} />
