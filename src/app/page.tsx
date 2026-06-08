@@ -1,6 +1,5 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { BucketCard } from "@/components/minto/bucket-card";
-import { DebtsSummary } from "@/components/minto/debts-summary";
 import { LoansGivenSummary } from "@/components/minto/loans-given-summary";
 import { MoneySummary } from "@/components/minto/money-summary";
 import { RecentTransactions } from "@/components/minto/recent-transactions";
@@ -17,6 +16,7 @@ import {
   totalMoney,
   upcomingPayments,
 } from "@/data/mock-data";
+import { DebtsSummary } from "@/features/debts";
 import { formatMoney } from "@/lib/money";
 
 export default function HomePage() {
