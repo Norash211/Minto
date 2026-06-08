@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { BucketCard } from "@/components/minto/bucket-card";
 import { MoneySummary } from "@/components/minto/money-summary";
 import { UpcomingPayments } from "@/components/minto/upcoming-payments";
 import {
@@ -14,6 +13,7 @@ import {
   totalMoney,
   upcomingPayments,
 } from "@/data/mock-data";
+import { BucketCard } from "@/features/buckets";
 import { DebtsSummary } from "@/features/debts";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
 import { RecentTransactions } from "@/features/transactions";
