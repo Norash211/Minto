@@ -1,5 +1,5 @@
 import { formatMoney } from "@/lib/money";
-import type { UpcomingPayment } from "@/lib/types";
+import type { UpcomingPayment } from "@/types/finance";
 
 type UpcomingPaymentsProps = {
   payments: UpcomingPayment[];

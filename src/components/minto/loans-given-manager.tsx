@@ -1,7 +1,7 @@
 "use client";
 
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import type { LoanGiven } from "@/lib/types";
+import type { LoanGiven } from "@/types/finance";
 import {
   initialLoanGivenFormState,
   LoanGivenForm,

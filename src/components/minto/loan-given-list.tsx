@@ -1,4 +1,4 @@
-import type { LoanGiven } from "@/lib/types";
+import type { LoanGiven } from "@/types/finance";
 import { LoanGivenCard } from "./loan-given-card";
 
 type LoanGivenListProps = {

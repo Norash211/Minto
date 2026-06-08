@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { accounts } from "@/data/mock-data";
 import { formatMoney } from "@/lib/money";
-import { accounts } from "@/lib/mock-data";
 
 const toneClasses = {
   sage: "bg-sage",

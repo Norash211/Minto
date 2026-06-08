@@ -4,26 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import {
-  AlertCircle,
-  Archive,
-  ArrowRightLeft,
-  HandCoins,
-  Home,
-  TrendingUp,
-  WalletCards,
-  type LucideIcon,
-} from "lucide-react";
-
-const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
-  { href: "/", label: "Inicio", icon: Home },
-  { href: "/accounts", label: "Cuentas", icon: WalletCards },
-  { href: "/buckets", label: "Apartados", icon: Archive },
-  { href: "/transactions", label: "Movimientos", icon: ArrowRightLeft },
-  { href: "/forecast", label: "Proyección", icon: TrendingUp },
-  { href: "/debts", label: "Deudas", icon: AlertCircle },
-  { href: "/loans-given", label: "Dinero prestado", icon: HandCoins },
-];
+import { navItems } from "@/config/navigation";
 
 type AppShellProps = {
   children: React.ReactNode;

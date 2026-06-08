@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { monthlyForecast } from "@/data/mock-data";
 import { formatMoney } from "@/lib/money";
-import { monthlyForecast } from "@/lib/mock-data";
 
 const forecastRows = [
   ["Ingresos esperados", monthlyForecast.expectedIncome],

@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import type { LoanGiven } from "@/lib/types";
+import type { LoanGiven } from "@/types/finance";
 
 export type LoanGivenFormState = {
   personName: string;

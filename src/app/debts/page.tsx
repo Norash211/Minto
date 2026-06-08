@@ -1,7 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { DebtCard } from "@/components/minto/debt-card";
 import { DebtsSummary } from "@/components/minto/debts-summary";
-import { debtDueSoonMoney, debts, totalDebtOwed } from "@/lib/mock-data";
+import { debtDueSoonMoney, debts, totalDebtOwed } from "@/data/mock-data";
 
 export default function DebtsPage() {
   return (

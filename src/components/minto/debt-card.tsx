@@ -1,5 +1,5 @@
 import { formatMoney } from "@/lib/money";
-import type { Debt } from "@/lib/types";
+import type { Debt } from "@/types/finance";
 
 type DebtCardProps = {
   debt: Debt;

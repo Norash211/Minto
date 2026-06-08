@@ -5,7 +5,6 @@ import { LoansGivenSummary } from "@/components/minto/loans-given-summary";
 import { MoneySummary } from "@/components/minto/money-summary";
 import { RecentTransactions } from "@/components/minto/recent-transactions";
 import { UpcomingPayments } from "@/components/minto/upcoming-payments";
-import { formatMoney } from "@/lib/money";
 import {
   buckets,
   committedMoney,
@@ -17,7 +16,8 @@ import {
   totalLoansGiven,
   totalMoney,
   upcomingPayments,
-} from "@/lib/mock-data";
+} from "@/data/mock-data";
+import { formatMoney } from "@/lib/money";
 
 export default function HomePage() {
   return (

@@ -1,5 +1,5 @@
 import { formatSignedMoney } from "@/lib/money";
-import type { Transaction } from "@/lib/types";
+import type { Transaction } from "@/types/finance";
 
 type RecentTransactionsProps = {
   transactions: Transaction[];

@@ -1,5 +1,5 @@
 import { formatMoney, percentOf } from "@/lib/money";
-import type { Bucket } from "@/lib/types";
+import type { Bucket } from "@/types/finance";
 
 type BucketCardProps = {
   bucket: Bucket;

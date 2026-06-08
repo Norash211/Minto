@@ -6,7 +6,7 @@ import type {
   MonthlyForecast,
   Transaction,
   UpcomingPayment,
-} from "./types";
+} from "@/types/finance";
 
 export const accounts: Account[] = [
   {

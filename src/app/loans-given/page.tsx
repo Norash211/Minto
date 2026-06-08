@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { LoansGivenManager } from "@/components/minto/loans-given-manager";
-import { loansGiven } from "@/lib/mock-data";
+import { loansGiven } from "@/data/mock-data";
 
 export default function LoansGivenPage() {
   return (

@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { RecentTransactions } from "@/components/minto/recent-transactions";
-import { recentTransactions } from "@/lib/mock-data";
+import { recentTransactions } from "@/data/mock-data";
 
 export default function TransactionsPage() {
   return (

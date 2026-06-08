@@ -1,6 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { BucketCard } from "@/components/minto/bucket-card";
-import { buckets } from "@/lib/mock-data";
+import { buckets } from "@/data/mock-data";
 
 export default function BucketsPage() {
   return (
