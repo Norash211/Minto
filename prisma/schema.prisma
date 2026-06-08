@@ -1,0 +1,640 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+
+  defaultCurrency     String     @default("MXN")
+  timezone            String     @default("America/Mexico_City")
+  locale              String     @default("es-MX")
+  onboardingCompleted Boolean    @default(false)
+  status              UserStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  credentials        UserCredential?
+  authAccounts       AuthAccount[]
+  sessions           Session[]
+  verificationTokens VerificationToken[]
+
+  financialAccounts FinancialAccount[]
+  transactions      Transaction[]
+  buckets           Bucket[]
+  bucketAllocations BucketAllocation[]
+  debts             Debt[]
+  scheduledPayments ScheduledPayment[]
+  subscriptions     Subscription[]
+  goals             Goal[]
+  loansGiven        LoanGiven[]
+
+  notificationPreferences NotificationPreference?
+  notifications           Notification[]
+
+  @@map("users")
+}
+
+model UserCredential {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  passwordHash        String
+  passwordUpdatedAt   DateTime?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_credentials")
+}
+
+model AuthAccount {
+  id     String @id @default(uuid())
+  userId String
+
+  provider          AuthProvider
+  providerAccountId String
+
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  tokenType    String?
+  scope        String?
+  idToken      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("auth_accounts")
+}
+
+model Session {
+  id     String @id @default(uuid())
+  userId String
+
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ipAddress        String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id     String  @id @default(uuid())
+  userId String?
+
+  email     String
+  tokenHash String                @unique
+  type      VerificationTokenType
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("verification_tokens")
+}
+
+model FinancialAccount {
+  id     String @id @default(uuid())
+  userId String
+
+  name String
+  type FinancialAccountType
+
+  initialBalance Decimal @default(0) @db.Decimal(14, 2)
+  currentBalance Decimal @default(0) @db.Decimal(14, 2)
+  currency       String  @default("MXN")
+
+  creditLimit   Decimal? @db.Decimal(14, 2)
+  statementDay  Int?
+  paymentDueDay Int?
+
+  isActive Boolean @default(true)
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  entries           TransactionEntry[]
+  bucketAllocations BucketAllocation[]
+  linkedDebts       Debt[]
+  scheduledPayments ScheduledPayment[]
+  subscriptions     Subscription[]
+
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([userId, type])
+  @@map("financial_accounts")
+}
+
+model Transaction {
+  id     String @id @default(uuid())
+  userId String
+
+  type        TransactionType
+  currency    String            @default("MXN")
+  date        DateTime
+  description String
+  category    String?
+  status      TransactionStatus @default(COMPLETED)
+  notes       String?
+
+  debtId         String?
+  subscriptionId String?
+  goalId         String?
+  loanGivenId    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  entries TransactionEntry[]
+
+  debt         Debt?         @relation(fields: [debtId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  goal         Goal?         @relation(fields: [goalId], references: [id])
+  loanGiven    LoanGiven?    @relation(fields: [loanGivenId], references: [id])
+
+  @@index([userId, date])
+  @@index([userId, type])
+  @@index([debtId])
+  @@index([subscriptionId])
+  @@index([goalId])
+  @@index([loanGivenId])
+  @@map("transactions")
+}
+
+model TransactionEntry {
+  id                 String @id @default(uuid())
+  transactionId      String
+  financialAccountId String
+
+  direction TransactionEntryDirection
+  amount    Decimal                   @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+
+  transaction      Transaction      @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  financialAccount FinancialAccount @relation(fields: [financialAccountId], references: [id])
+
+  @@index([transactionId])
+  @@index([financialAccountId])
+  @@map("transaction_entries")
+}
+
+model Bucket {
+  id     String @id @default(uuid())
+  userId String
+
+  name          String
+  type          BucketType
+  targetAmount  Decimal?   @db.Decimal(14, 2)
+  currentAmount Decimal    @default(0) @db.Decimal(14, 2)
+  currency      String     @default("MXN")
+  priority      Int        @default(0)
+  isProtected   Boolean    @default(false)
+  color         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allocations BucketAllocation[]
+
+  @@index([userId])
+  @@index([userId, type])
+  @@map("buckets")
+}
+
+model BucketAllocation {
+  id                 String @id @default(uuid())
+  userId             String
+  bucketId           String
+  financialAccountId String
+
+  amount Decimal @db.Decimal(14, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bucket           Bucket           @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  financialAccount FinancialAccount @relation(fields: [financialAccountId], references: [id])
+
+  @@unique([bucketId, financialAccountId])
+  @@index([userId])
+  @@index([financialAccountId])
+  @@map("bucket_allocations")
+}
+
+model Debt {
+  id                       String  @id @default(uuid())
+  userId                   String
+  linkedFinancialAccountId String?
+
+  name String
+  type DebtType
+
+  originalAmount Decimal  @db.Decimal(14, 2)
+  currentBalance Decimal  @db.Decimal(14, 2)
+  monthlyPayment Decimal? @db.Decimal(14, 2)
+
+  currency     String    @default("MXN")
+  dueDay       Int?
+  dueDate      DateTime?
+  interestRate Decimal?  @db.Decimal(5, 2)
+
+  installmentsTotal Int?
+  installmentsPaid  Int  @default(0)
+
+  status DebtStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user                   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedFinancialAccount FinancialAccount? @relation(fields: [linkedFinancialAccountId], references: [id])
+
+  transactions      Transaction[]
+  scheduledPayments ScheduledPayment[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([linkedFinancialAccountId])
+  @@map("debts")
+}
+
+model ScheduledPayment {
+  id                        String  @id @default(uuid())
+  userId                    String
+  paymentFinancialAccountId String?
+
+  name      String
+  amount    Decimal                @db.Decimal(14, 2)
+  currency  String                 @default("MXN")
+  dueDate   DateTime
+  frequency PaymentFrequency       @default(ONE_TIME)
+  category  String?
+  status    ScheduledPaymentStatus @default(PENDING)
+
+  linkedDebtId         String?
+  linkedSubscriptionId String?
+  linkedLoanGivenId    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user                    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentFinancialAccount FinancialAccount? @relation(fields: [paymentFinancialAccountId], references: [id])
+
+  linkedDebt         Debt?         @relation(fields: [linkedDebtId], references: [id])
+  linkedSubscription Subscription? @relation(fields: [linkedSubscriptionId], references: [id])
+  linkedLoanGiven    LoanGiven?    @relation(fields: [linkedLoanGivenId], references: [id])
+
+  @@index([userId, dueDate])
+  @@index([userId, status])
+  @@index([paymentFinancialAccountId])
+  @@index([linkedDebtId])
+  @@index([linkedSubscriptionId])
+  @@index([linkedLoanGivenId])
+  @@map("scheduled_payments")
+}
+
+model Subscription {
+  id                        String  @id @default(uuid())
+  userId                    String
+  paymentFinancialAccountId String?
+
+  name       String
+  amount     Decimal              @db.Decimal(14, 2)
+  currency   String               @default("MXN")
+  billingDay Int
+  frequency  PaymentFrequency     @default(MONTHLY)
+  category   SubscriptionCategory
+  isActive   Boolean              @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user                    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentFinancialAccount FinancialAccount? @relation(fields: [paymentFinancialAccountId], references: [id])
+
+  transactions      Transaction[]
+  scheduledPayments ScheduledPayment[]
+
+  @@index([userId])
+  @@index([userId, isActive])
+  @@index([paymentFinancialAccountId])
+  @@map("subscriptions")
+}
+
+model Goal {
+  id     String @id @default(uuid())
+  userId String
+
+  name          String
+  category      GoalCategory
+  targetAmount  Decimal      @db.Decimal(14, 2)
+  currentAmount Decimal      @default(0) @db.Decimal(14, 2)
+  currency      String       @default("MXN")
+  priority      Int          @default(0)
+  targetDate    DateTime?
+  status        GoalStatus   @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@map("goals")
+}
+
+model LoanGiven {
+  id     String @id @default(uuid())
+  userId String
+
+  borrowerName       String
+  borrowerContact    String?
+  principalAmount    Decimal         @db.Decimal(14, 2)
+  amountRepaid       Decimal         @default(0) @db.Decimal(14, 2)
+  currency           String          @default("MXN")
+  expectedReturnDate DateTime?
+  status             LoanGivenStatus @default(ACTIVE)
+  notes              String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions      Transaction[]
+  scheduledPayments ScheduledPayment[]
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, expectedReturnDate])
+  @@map("loans_given")
+}
+
+model NotificationPreference {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  inAppEnabled Boolean @default(true)
+  emailEnabled Boolean @default(true)
+  pushEnabled  Boolean @default(false)
+
+  defaultDaysBeforeDue Int @default(3)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notification_preferences")
+}
+
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+
+  type     NotificationType
+  status   NotificationStatus   @default(SCHEDULED)
+  channel  NotificationChannel  @default(IN_APP)
+  priority NotificationPriority @default(MEDIUM)
+
+  title    String
+  message  String
+  metadata Json?
+
+  scheduledFor DateTime
+  sentAt       DateTime?
+  readAt       DateTime?
+  dismissedAt  DateTime?
+
+  relatedEntityType NotificationEntityType?
+  relatedEntityId   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, status])
+  @@index([userId, scheduledFor])
+  @@index([relatedEntityType, relatedEntityId])
+  @@map("notifications")
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum AuthProvider {
+  GOOGLE
+  CREDENTIALS
+}
+
+enum VerificationTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  MAGIC_LINK
+}
+
+enum FinancialAccountType {
+  CHECKING
+  SAVINGS
+  CASH
+  DIGITAL_WALLET
+  CREDIT_CARD
+  INVESTMENT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  DEBT_PAYMENT
+  TRANSFER
+  SUBSCRIPTION_PAYMENT
+  GOAL_CONTRIBUTION
+  LOAN_GIVEN
+  LOAN_REPAYMENT
+  CREDIT_CARD_PAYMENT
+  ADJUSTMENT
+}
+
+enum TransactionEntryDirection {
+  IN
+  OUT
+}
+
+enum TransactionStatus {
+  COMPLETED
+  PENDING
+  SCHEDULED
+  CANCELLED
+}
+
+enum BucketType {
+  FREE
+  COMMITTED
+  EMERGENCY
+  GOAL
+  DEBT
+  SUBSCRIPTION
+  CAREER
+}
+
+enum DebtType {
+  PERSONAL_LOAN
+  AUTO_LOAN
+  MORTGAGE
+  INSTALLMENT_PURCHASE
+  BNPL
+  STORE_CREDIT
+  OTHER
+}
+
+enum DebtStatus {
+  ACTIVE
+  PAID_OFF
+  PAUSED
+  CANCELLED
+}
+
+enum PaymentFrequency {
+  ONE_TIME
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  BIMONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum ScheduledPaymentStatus {
+  PENDING
+  PAID
+  SKIPPED
+  CANCELLED
+}
+
+enum SubscriptionCategory {
+  ENTERTAINMENT
+  PRODUCTIVITY
+  CAREER
+  SOFTWARE
+  OTHER
+}
+
+enum GoalCategory {
+  EMERGENCY
+  TECH
+  TRAVEL
+  CAREER
+  VEHICLE
+  LIFESTYLE
+  PET
+  OTHER
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum LoanGivenStatus {
+  ACTIVE
+  PARTIALLY_REPAID
+  PAID
+  OVERDUE
+  WRITTEN_OFF
+}
+
+enum NotificationType {
+  SUBSCRIPTION_DUE
+  DEBT_DUE
+  CREDIT_CARD_DUE
+  CREDIT_CARD_CUTOFF
+  LOAN_GIVEN_DUE
+  SCHEDULED_PAYMENT_DUE
+  LOW_BALANCE
+  GOAL_PROGRESS
+  SYSTEM
+}
+
+enum NotificationStatus {
+  SCHEDULED
+  SENT
+  READ
+  DISMISSED
+  CANCELLED
+  FAILED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum NotificationEntityType {
+  SUBSCRIPTION
+  DEBT
+  FINANCIAL_ACCOUNT
+  LOAN_GIVEN
+  SCHEDULED_PAYMENT
+  GOAL
+}
