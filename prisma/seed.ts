@@ -5,6 +5,14 @@ const prisma = new PrismaClient();
 const demoEmail = "demo@minto.app";
 const seedTransactionDate = new Date("2026-06-01T12:00:00.000Z");
 
+function daysFromToday(days: number) {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() + days);
+
+  return date;
+}
+
 async function upsertByUserAndName<T extends { id: string }>(
   find: () => Promise<T | null>,
   update: (id: string) => Promise<T>,
@@ -323,7 +331,7 @@ async function main() {
     ],
   });
 
-  await upsertByUserAndName(
+  const netflix = await upsertByUserAndName(
     () => prisma.subscription.findFirst({ where: { userId: user.id, name: "Netflix" } }),
     (id) =>
       prisma.subscription.update({
@@ -353,7 +361,7 @@ async function main() {
       }),
   );
 
-  await upsertByUserAndName(
+  const macbookDebt = await upsertByUserAndName(
     () => prisma.debt.findFirst({ where: { userId: user.id, name: "MacBook MSI" } }),
     (id) =>
       prisma.debt.update({
@@ -385,6 +393,80 @@ async function main() {
           dueDay: 10,
           installmentsTotal: 12,
           installmentsPaid: 4,
+        },
+      }),
+  );
+
+  await upsertByUserAndName(
+    () =>
+      prisma.scheduledPayment.findFirst({
+        where: { userId: user.id, name: "Netflix próximo pago" },
+      }),
+    (id) =>
+      prisma.scheduledPayment.update({
+        where: { id },
+        data: {
+          paymentFinancialAccountId: tarjetaBbva.id,
+          amount: new Prisma.Decimal(299),
+          currency: "MXN",
+          dueDate: daysFromToday(7),
+          frequency: "MONTHLY",
+          category: "Entretenimiento",
+          status: "PENDING",
+          linkedSubscriptionId: netflix.id,
+          linkedDebtId: null,
+          linkedLoanGivenId: null,
+        },
+      }),
+    () =>
+      prisma.scheduledPayment.create({
+        data: {
+          userId: user.id,
+          paymentFinancialAccountId: tarjetaBbva.id,
+          name: "Netflix próximo pago",
+          amount: new Prisma.Decimal(299),
+          currency: "MXN",
+          dueDate: daysFromToday(7),
+          frequency: "MONTHLY",
+          category: "Entretenimiento",
+          linkedSubscriptionId: netflix.id,
+        },
+      }),
+  );
+
+  await upsertByUserAndName(
+    () =>
+      prisma.scheduledPayment.findFirst({
+        where: { userId: user.id, name: "MacBook MSI próximo pago" },
+      }),
+    (id) =>
+      prisma.scheduledPayment.update({
+        where: { id },
+        data: {
+          paymentFinancialAccountId: tarjetaBbva.id,
+          amount: new Prisma.Decimal(3000),
+          currency: "MXN",
+          dueDate: daysFromToday(3),
+          frequency: "MONTHLY",
+          category: "Deuda",
+          status: "PENDING",
+          linkedDebtId: macbookDebt.id,
+          linkedSubscriptionId: null,
+          linkedLoanGivenId: null,
+        },
+      }),
+    () =>
+      prisma.scheduledPayment.create({
+        data: {
+          userId: user.id,
+          paymentFinancialAccountId: tarjetaBbva.id,
+          name: "MacBook MSI próximo pago",
+          amount: new Prisma.Decimal(3000),
+          currency: "MXN",
+          dueDate: daysFromToday(3),
+          frequency: "MONTHLY",
+          category: "Deuda",
+          linkedDebtId: macbookDebt.id,
         },
       }),
   );

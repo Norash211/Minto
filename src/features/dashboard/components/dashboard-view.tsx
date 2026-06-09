@@ -1,36 +1,44 @@
 import { AppShell } from "@/components/layout/app-shell";
-import {
-  buckets,
-  totalLoansGiven,
-  upcomingPayments,
-} from "@/data/mock-data";
+import { totalLoansGiven } from "@/data/mock-data";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
 import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
 import { RecentTransactions } from "@/features/transactions/components/recent-transactions";
 import { formatMoney } from "@/lib/money";
 import { getDemoUser } from "@/server/auth/get-demo-user";
-import { getAccounts, getDashboardSummary, getRecentTransactions } from "@/server/queries";
 import {
+  getAccounts,
+  getDashboardBuckets,
+  getDashboardSummary,
+  getRecentTransactions,
+  getUpcomingPayments,
+} from "@/server/queries";
+import {
+  toDashboardBuckets,
   toDashboardDebtSummary,
   toDashboardMoneySummary,
   toDashboardMonthlyForecast,
   toDashboardRecentTransactions,
+  toDashboardUpcomingPayments,
 } from "../utils/dashboard-adapters";
 import { MoneySummary } from "./money-summary";
 import { UpcomingPayments } from "./upcoming-payments";
 
 export async function DashboardView() {
   const user = await getDemoUser();
-  const [summary, accounts, recentTransactions] = await Promise.all([
+  const [summary, accounts, recentTransactions, buckets, upcomingPayments] = await Promise.all([
     getDashboardSummary(user.id),
     getAccounts(user.id),
     getRecentTransactions(user.id),
+    getDashboardBuckets(user.id),
+    getUpcomingPayments(user.id),
   ]);
   const moneySummary = toDashboardMoneySummary(summary, accounts);
   const debtSummary = toDashboardDebtSummary(summary);
   const monthlyForecast = toDashboardMonthlyForecast(summary, recentTransactions);
   const dashboardRecentTransactions = toDashboardRecentTransactions(recentTransactions).slice(0, 3);
+  const dashboardBuckets = toDashboardBuckets(buckets);
+  const dashboardUpcomingPayments = toDashboardUpcomingPayments(upcomingPayments);
 
   return (
     <AppShell>
@@ -73,7 +81,7 @@ export async function DashboardView() {
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
-                {buckets.slice(0, 4).map((bucket) => (
+                {dashboardBuckets.map((bucket) => (
                   <BucketCard key={bucket.id} bucket={bucket} />
                 ))}
               </div>
@@ -109,7 +117,7 @@ export async function DashboardView() {
               </div>
             </section>
 
-            <UpcomingPayments payments={upcomingPayments} />
+            <UpcomingPayments payments={dashboardUpcomingPayments} />
             <RecentTransactions transactions={dashboardRecentTransactions} />
           </aside>
         </div>

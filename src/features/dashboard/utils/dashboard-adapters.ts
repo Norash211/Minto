@@ -1,5 +1,11 @@
-import type { DashboardSummary, GetAccountsResult, GetRecentTransactionsResult } from "@/server/queries";
-import type { MonthlyForecast, Transaction } from "@/types/finance";
+import type {
+  DashboardSummary,
+  GetAccountsResult,
+  GetDashboardBucketsResult,
+  GetRecentTransactionsResult,
+  GetUpcomingPaymentsResult,
+} from "@/server/queries";
+import type { Bucket, MonthlyForecast, Transaction, UpcomingPayment } from "@/types/finance";
 
 function decimalToNumber(value: { toNumber(): number }) {
   return value.toNumber();
@@ -7,6 +13,22 @@ function decimalToNumber(value: { toNumber(): number }) {
 
 function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
+}
+
+function getBucketDescription(bucket: GetDashboardBucketsResult[number]) {
+  if (bucket.type === "EMERGENCY") {
+    return "Fondo protegido para imprevistos";
+  }
+
+  if (bucket.type === "COMMITTED") {
+    return "Dinero asignado para compromisos";
+  }
+
+  if (bucket.type === "GOAL") {
+    return "Ahorro reservado para una meta";
+  }
+
+  return "Dinero organizado por prioridad";
 }
 
 function getSignedTransactionAmount(transaction: GetRecentTransactionsResult[number]) {
@@ -76,5 +98,34 @@ export function toDashboardRecentTransactions(
       .map((entry) => entry.financialAccount.name)
       .filter((name, index, names) => names.indexOf(name) === index)
       .join(" / "),
+  }));
+}
+
+export function toDashboardBuckets(buckets: GetDashboardBucketsResult): Bucket[] {
+  return buckets.map((bucket) => ({
+    id: bucket.id,
+    name: bucket.name,
+    description: getBucketDescription(bucket),
+    balance: decimalToNumber(bucket.currentAmount),
+    target: bucket.targetAmount ? decimalToNumber(bucket.targetAmount) : undefined,
+    committed: bucket.type !== "FREE",
+  }));
+}
+
+export function toDashboardUpcomingPayments(
+  payments: GetUpcomingPaymentsResult,
+): UpcomingPayment[] {
+  return payments.map((payment) => ({
+    id: payment.id,
+    name: payment.name,
+    dueDate: formatDate(payment.dueDate),
+    amount: decimalToNumber(payment.amount),
+    bucket:
+      payment.linkedSubscription?.name ??
+      payment.linkedDebt?.name ??
+      payment.linkedLoanGiven?.borrowerName ??
+      payment.category ??
+      payment.paymentFinancialAccount?.name ??
+      "Pago programado",
   }));
 }
