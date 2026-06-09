@@ -7,24 +7,40 @@ function decimalToNumber(value: { toNumber(): number } | null | undefined) {
 }
 
 export async function getAccountDetail(userId: string, accountId: string) {
-  const label = `[perf] getAccountDetail ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  console.time(label);
-  const accountLabel = `${label} financialAccount.findFirst`;
-  console.time(accountLabel);
   const account = await prisma.financialAccount.findFirst({
     where: {
       id: accountId,
       userId,
       isActive: true,
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      currency: true,
+      notes: true,
+      currentBalance: true,
+      creditLimit: true,
+      statementDay: true,
+      paymentDueDay: true,
       entries: {
-        include: {
+        select: {
           transaction: {
-            include: {
+            select: {
+              id: true,
+              type: true,
+              category: true,
+              date: true,
+              description: true,
               entries: {
-                include: {
-                  financialAccount: true,
+                select: {
+                  direction: true,
+                  amount: true,
+                  financialAccount: {
+                    select: {
+                      name: true,
+                    },
+                  },
                 },
               },
             },
@@ -39,40 +55,26 @@ export async function getAccountDetail(userId: string, accountId: string) {
       },
     },
   });
-  console.timeEnd(accountLabel);
 
   if (!account) {
-    console.timeEnd(label);
     return null;
   }
 
   const [totals, transactionCount] = await Promise.all([
-    (async () => {
-      const queryLabel = `${label} transactionEntry.groupBy`;
-      console.time(queryLabel);
-      const result = await prisma.transactionEntry.groupBy({
-        by: ["direction"],
-        where: {
-          financialAccountId: account.id,
-        },
-        _sum: {
-          amount: true,
-        },
-      });
-      console.timeEnd(queryLabel);
-      return result;
-    })(),
-    (async () => {
-      const queryLabel = `${label} transactionEntry.count`;
-      console.time(queryLabel);
-      const result = await prisma.transactionEntry.count({
-        where: {
-          financialAccountId: account.id,
-        },
-      });
-      console.timeEnd(queryLabel);
-      return result;
-    })(),
+    prisma.transactionEntry.groupBy({
+      by: ["direction"],
+      where: {
+        financialAccountId: account.id,
+      },
+      _sum: {
+        amount: true,
+      },
+    }),
+    prisma.transactionEntry.count({
+      where: {
+        financialAccountId: account.id,
+      },
+    }),
   ]);
 
   const totalIn =
@@ -82,7 +84,7 @@ export async function getAccountDetail(userId: string, accountId: string) {
   const currentBalance = decimalToNumber(account.currentBalance);
   const creditLimit = decimalToNumber(account.creditLimit);
 
-  const result = {
+  return {
     account,
     transactions: account.entries.map((entry) => entry.transaction),
     summary: {
@@ -98,9 +100,6 @@ export async function getAccountDetail(userId: string, accountId: string) {
       paymentDueDay: account.type === "CREDIT_CARD" ? account.paymentDueDay : null,
     },
   };
-
-  console.timeEnd(label);
-  return result;
 }
 
 export type GetAccountDetailResult = NonNullable<

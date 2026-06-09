@@ -1,10 +1,10 @@
+import type { User } from "@prisma/client";
 import { AppShell } from "@/components/layout/app-shell";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
 import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
 import { RecentTransactions } from "@/features/transactions/components/recent-transactions";
 import { formatMoney } from "@/lib/money";
-import { requireCurrentUser } from "@/server/auth";
 import {
   getAccounts,
   getDashboardBuckets,
@@ -26,8 +26,11 @@ import {
 import { MoneySummary } from "./money-summary";
 import { UpcomingPayments } from "./upcoming-payments";
 
-export async function DashboardView() {
-  const user = await requireCurrentUser();
+type DashboardViewProps = {
+  user: User;
+};
+
+export async function DashboardView({ user }: DashboardViewProps) {
   const [
     summary,
     accounts,
