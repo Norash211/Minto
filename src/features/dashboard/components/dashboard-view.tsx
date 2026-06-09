@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { LogoutButton } from "@/features/auth";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
 import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
@@ -68,7 +67,6 @@ export async function DashboardView() {
             <p className="max-w-md text-sm leading-6 text-muted sm:text-right">
               Una vista limpia de lo disponible, lo comprometido y lo que viene.
             </p>
-            <LogoutButton />
           </div>
         </header>
 
