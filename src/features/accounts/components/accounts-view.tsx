@@ -2,6 +2,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { formatMoney } from "@/lib/money";
 import type { GetAccountsResult } from "@/server/queries";
 import { toAccountsViewAccounts } from "../utils/accounts-adapters";
+import { CreateAccountDialog } from "./create-account-dialog";
 
 const toneClasses = {
   sage: "bg-sage",
@@ -19,11 +20,14 @@ export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
 
   return (
     <AppShell>
-      <section className="mb-6">
-        <p className="text-sm font-medium text-muted">Cuentas</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-[0] text-ink">
-          Dónde vive tu dinero
-        </h1>
+      <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-medium text-muted">Cuentas</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-[0] text-ink">
+            Dónde vive tu dinero
+          </h1>
+        </div>
+        <CreateAccountDialog />
       </section>
 
       {accounts.length > 0 ? (
@@ -45,9 +49,12 @@ export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
           ))}
         </div>
       ) : (
-        <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted">
-          Aún no hay cuentas registradas.
-        </p>
+        <div className="rounded-2xl border border-border bg-card p-5">
+          <p className="text-sm font-medium text-ink">Aún no hay cuentas registradas.</p>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            Agrega tu primera cuenta para empezar a calcular tu dinero disponible.
+          </p>
+        </div>
       )}
     </AppShell>
   );
