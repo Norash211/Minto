@@ -13,6 +13,7 @@ export type AuthActionState = {
 
 const invalidCredentialsError = "Email o contraseña inválidos.";
 const registerError = "No pudimos crear la cuenta. Revisa los datos e inténtalo de nuevo.";
+const inviteCodeError = "No pudimos completar el registro.";
 const validationError = "Revisa los datos e inténtalo de nuevo.";
 
 export async function registerAction(
@@ -23,13 +24,20 @@ export async function registerAction(
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
+    inviteCode: formData.get("inviteCode"),
   });
 
   if (!parsed.success) {
     return { error: validationError };
   }
 
-  const { name, email, password } = parsed.data;
+  const { name, email, password, inviteCode } = parsed.data;
+  const registrationInviteCode = process.env.REGISTRATION_INVITE_CODE;
+
+  if (!registrationInviteCode || inviteCode !== registrationInviteCode) {
+    return { error: inviteCodeError };
+  }
+
   const existingUser = await prisma.user.findUnique({
     where: { email },
     select: { id: true },

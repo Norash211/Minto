@@ -17,4 +17,5 @@ export const registerSchema = z.object({
   name: z.string().trim().min(2),
   email: emailSchema,
   password: passwordSchema,
+  inviteCode: z.string().trim().min(4),
 });

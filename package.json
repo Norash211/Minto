@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postinstall": "prisma generate",
     "prisma:seed": "tsx prisma/seed.ts",
     "test:queries": "tsx scripts/test-queries.ts",
     "start": "next start"

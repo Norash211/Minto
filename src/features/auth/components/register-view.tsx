@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useActionState } from "react";
-import { Lock, Mail, UserRound } from "lucide-react";
+import { KeyRound, Lock, Mail, UserRound } from "lucide-react";
 import { formatMoney } from "@/lib/money";
 import { registerAction } from "@/server/auth/actions";
 import type { LoginPreviewMetric } from "../types";
@@ -174,6 +174,26 @@ export function RegisterView() {
                     minLength={8}
                     className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
                     placeholder="••••••••"
+                  />
+                </span>
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm text-secondary">Código de invitación</span>
+                <span className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 transition focus-within:border-primary">
+                  <KeyRound
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 text-muted"
+                    strokeWidth={1.8}
+                  />
+                  <input
+                    name="inviteCode"
+                    type="text"
+                    autoComplete="off"
+                    required
+                    minLength={4}
+                    className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                    placeholder="Código privado"
                   />
                 </span>
               </label>
