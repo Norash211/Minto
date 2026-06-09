@@ -506,6 +506,7 @@ enum TransactionType {
   LOAN_REPAYMENT
   CREDIT_CARD_PAYMENT
   ADJUSTMENT
+  OPENING_BALANCE
 }
 
 enum TransactionEntryDirection {
