@@ -99,11 +99,17 @@ export async function DashboardView() {
                   </p>
                 </div>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
-                {dashboardBuckets.map((bucket) => (
-                  <BucketCard key={bucket.id} bucket={bucket} />
-                ))}
-              </div>
+              {dashboardBuckets.length > 0 ? (
+                <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
+                  {dashboardBuckets.map((bucket) => (
+                    <BucketCard key={bucket.id} bucket={bucket} />
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-2xl border border-border bg-card p-5 text-sm text-muted">
+                  Aún no hay apartados principales.
+                </p>
+              )}
             </section>
           </div>
 
