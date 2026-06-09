@@ -11,6 +11,8 @@ export type { DashboardSummary } from "./dashboard/get-dashboard-summary";
 
 export { getDebtDueSoonSummary } from "./debts/get-debt-due-soon-summary";
 export type { DebtDueSoonSummary } from "./debts/get-debt-due-soon-summary";
+export { getDebts } from "./debts/get-debts";
+export type { GetDebtsResult } from "./debts/get-debts";
 
 export { getLoansGivenSummary } from "./loans-given/get-loans-given-summary";
 export type { LoansGivenSummary } from "./loans-given/get-loans-given-summary";

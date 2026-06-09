@@ -1,9 +1,20 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { debtDueSoonMoney, debts, totalDebtOwed } from "@/data/mock-data";
+import type { GetDebtsResult } from "@/server/queries";
+import {
+  toDebtsViewDebts,
+  toDebtsViewSummary,
+} from "../utils/debts-adapters";
 import { DebtCard } from "./debt-card";
 import { DebtsSummary } from "./debts-summary";
 
-export function DebtsView() {
+type DebtsViewProps = {
+  debts: GetDebtsResult;
+};
+
+export function DebtsView({ debts: sourceDebts }: DebtsViewProps) {
+  const debts = toDebtsViewDebts(sourceDebts);
+  const summary = toDebtsViewSummary(sourceDebts);
+
   return (
     <AppShell>
       <section className="mb-6">
@@ -15,8 +26,8 @@ export function DebtsView() {
 
       <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
         <DebtsSummary
-          totalDebtOwed={totalDebtOwed}
-          debtDueSoonMoney={debtDueSoonMoney}
+          totalDebtOwed={summary.totalDebtOwed}
+          debtDueSoonMoney={summary.debtDueSoonMoney}
         />
 
         {debts.length > 0 ? (

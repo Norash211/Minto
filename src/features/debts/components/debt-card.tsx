@@ -11,6 +11,12 @@ const debtKindLabels: Record<Debt["kind"], string> = {
   installment: "Compra a meses",
 };
 
+const debtStatusLabels: Record<Debt["status"], string> = {
+  active: "Activa",
+  paused: "Pausada",
+  paid: "Pagada",
+};
+
 export function DebtCard({ debt }: DebtCardProps) {
   return (
     <article className="rounded-2xl border border-border bg-card p-5">
@@ -40,7 +46,7 @@ export function DebtCard({ debt }: DebtCardProps) {
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-4 border-t border-border pt-3 text-sm text-muted">
-        <span>{debt.status === "active" ? "Activa" : "Pausada"}</span>
+        <span>{debtStatusLabels[debt.status]}</span>
         <span>{debt.dueDate}</span>
       </div>
     </article>
