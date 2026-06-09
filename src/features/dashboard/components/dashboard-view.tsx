@@ -1,5 +1,4 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { totalLoansGiven } from "@/data/mock-data";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
 import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
@@ -10,12 +9,15 @@ import {
   getAccounts,
   getDashboardBuckets,
   getDashboardSummary,
+  getDebtDueSoonSummary,
+  getLoansGivenSummary,
   getRecentTransactions,
   getUpcomingPayments,
 } from "@/server/queries";
 import {
   toDashboardBuckets,
   toDashboardDebtSummary,
+  toDashboardLoansGivenSummary,
   toDashboardMoneySummary,
   toDashboardMonthlyForecast,
   toDashboardRecentTransactions,
@@ -26,15 +28,26 @@ import { UpcomingPayments } from "./upcoming-payments";
 
 export async function DashboardView() {
   const user = await getDemoUser();
-  const [summary, accounts, recentTransactions, buckets, upcomingPayments] = await Promise.all([
+  const [
+    summary,
+    accounts,
+    recentTransactions,
+    buckets,
+    upcomingPayments,
+    debtDueSoonSummary,
+    loansGivenSummary,
+  ] = await Promise.all([
     getDashboardSummary(user.id),
     getAccounts(user.id),
     getRecentTransactions(user.id),
     getDashboardBuckets(user.id),
     getUpcomingPayments(user.id),
+    getDebtDueSoonSummary(user.id),
+    getLoansGivenSummary(user.id),
   ]);
   const moneySummary = toDashboardMoneySummary(summary, accounts);
-  const debtSummary = toDashboardDebtSummary(summary);
+  const debtSummary = toDashboardDebtSummary(summary, debtDueSoonSummary);
+  const dashboardLoansGivenSummary = toDashboardLoansGivenSummary(loansGivenSummary);
   const monthlyForecast = toDashboardMonthlyForecast(summary, recentTransactions);
   const dashboardRecentTransactions = toDashboardRecentTransactions(recentTransactions).slice(0, 3);
   const dashboardBuckets = toDashboardBuckets(buckets);
@@ -68,7 +81,9 @@ export async function DashboardView() {
                 totalDebtOwed={debtSummary.totalDebtOwed}
                 debtDueSoonMoney={debtSummary.debtDueSoonMoney}
               />
-              <LoansGivenSummary totalLoansGiven={totalLoansGiven} />
+              <LoansGivenSummary
+                totalLoansGiven={dashboardLoansGivenSummary.totalLoansGiven}
+              />
             </div>
 
             <section>

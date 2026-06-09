@@ -1,7 +1,9 @@
 import type {
   DashboardSummary,
+  DebtDueSoonSummary,
   GetAccountsResult,
   GetDashboardBucketsResult,
+  LoansGivenSummary,
   GetRecentTransactionsResult,
   GetUpcomingPaymentsResult,
 } from "@/server/queries";
@@ -60,10 +62,20 @@ export function toDashboardMoneySummary(
   };
 }
 
-export function toDashboardDebtSummary(summary: DashboardSummary) {
+export function toDashboardDebtSummary(
+  summary: DashboardSummary,
+  debtDueSoonSummary: DebtDueSoonSummary,
+) {
   return {
     totalDebtOwed: decimalToNumber(summary.totalDebt),
-    debtDueSoonMoney: 0,
+    debtDueSoonMoney: decimalToNumber(debtDueSoonSummary.totalDueSoon),
+  };
+}
+
+export function toDashboardLoansGivenSummary(summary: LoansGivenSummary) {
+  return {
+    totalLoansGiven:
+      decimalToNumber(summary.totalPrincipal) - decimalToNumber(summary.totalRepaid),
   };
 }
 

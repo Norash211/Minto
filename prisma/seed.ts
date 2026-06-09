@@ -473,6 +473,38 @@ async function main() {
 
   await upsertByUserAndName(
     () =>
+      prisma.loanGiven.findFirst({
+        where: { userId: user.id, borrowerName: "Carlos" },
+      }),
+    (id) =>
+      prisma.loanGiven.update({
+        where: { id },
+        data: {
+          principalAmount: new Prisma.Decimal(5000),
+          amountRepaid: new Prisma.Decimal(1500),
+          currency: "MXN",
+          expectedReturnDate: daysFromToday(30),
+          status: "PARTIALLY_REPAID",
+          notes: "Prestamo demo para validar resumen del dashboard",
+        },
+      }),
+    () =>
+      prisma.loanGiven.create({
+        data: {
+          userId: user.id,
+          borrowerName: "Carlos",
+          principalAmount: new Prisma.Decimal(5000),
+          amountRepaid: new Prisma.Decimal(1500),
+          currency: "MXN",
+          expectedReturnDate: daysFromToday(30),
+          status: "PARTIALLY_REPAID",
+          notes: "Prestamo demo para validar resumen del dashboard",
+        },
+      }),
+  );
+
+  await upsertByUserAndName(
+    () =>
       prisma.goal.findFirst({
         where: { userId: user.id, name: { in: ["Fondo Viaje Japón", "Fondo Viaje Japon"] } },
       }),
