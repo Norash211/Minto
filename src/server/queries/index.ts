@@ -3,6 +3,8 @@ export type { GetAccountsResult } from "./accounts/get-accounts";
 
 export { getDashboardBuckets } from "./buckets/get-dashboard-buckets";
 export type { GetDashboardBucketsResult } from "./buckets/get-dashboard-buckets";
+export { getBuckets } from "./buckets/get-buckets";
+export type { GetBucketsResult } from "./buckets/get-buckets";
 
 export { getDashboardSummary } from "./dashboard/get-dashboard-summary";
 export type { DashboardSummary } from "./dashboard/get-dashboard-summary";

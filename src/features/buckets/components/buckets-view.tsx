@@ -1,8 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { buckets } from "@/data/mock-data";
+import type { GetBucketsResult } from "@/server/queries";
 import { BucketCard } from "./bucket-card";
+import { toBucketsViewBuckets } from "../utils/buckets-adapters";
 
-export function BucketsView() {
+type BucketsViewProps = {
+  buckets: GetBucketsResult;
+};
+
+export function BucketsView({ buckets: sourceBuckets }: BucketsViewProps) {
+  const buckets = toBucketsViewBuckets(sourceBuckets);
+
   return (
     <AppShell>
       <section className="mb-6">
