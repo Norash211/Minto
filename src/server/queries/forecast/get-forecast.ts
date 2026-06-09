@@ -54,40 +54,72 @@ function getMonthLabel(date: Date) {
 }
 
 export async function getForecast(userId: string) {
+  const label = `[perf] getForecast ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  console.time(label);
   const { monthStart, monthEnd } = getMonthWindow();
 
   const [accounts, transactions, subscriptions, scheduledPayments, debts] =
     await Promise.all([
-      prisma.financialAccount.findMany({
-        where: {
-          userId,
-          isActive: true,
-        },
-      }),
-      getMonthlyTransactions(userId, monthStart, monthEnd),
-      prisma.subscription.findMany({
-        where: {
-          userId,
-          isActive: true,
-          frequency: "MONTHLY",
-        },
-      }),
-      prisma.scheduledPayment.findMany({
-        where: {
-          userId,
-          status: "PENDING",
-          dueDate: {
-            gte: monthStart,
-            lte: monthEnd,
+      (async () => {
+        const queryLabel = `${label} financialAccount.findMany`;
+        console.time(queryLabel);
+        const result = await prisma.financialAccount.findMany({
+          where: {
+            userId,
+            isActive: true,
           },
-        },
-      }),
-      prisma.debt.findMany({
-        where: {
-          userId,
-          status: "ACTIVE",
-        },
-      }),
+        });
+        console.timeEnd(queryLabel);
+        return result;
+      })(),
+      (async () => {
+        const queryLabel = `${label} monthlyTransactions.findMany`;
+        console.time(queryLabel);
+        const result = await getMonthlyTransactions(userId, monthStart, monthEnd);
+        console.timeEnd(queryLabel);
+        return result;
+      })(),
+      (async () => {
+        const queryLabel = `${label} subscription.findMany`;
+        console.time(queryLabel);
+        const result = await prisma.subscription.findMany({
+          where: {
+            userId,
+            isActive: true,
+            frequency: "MONTHLY",
+          },
+        });
+        console.timeEnd(queryLabel);
+        return result;
+      })(),
+      (async () => {
+        const queryLabel = `${label} scheduledPayment.findMany`;
+        console.time(queryLabel);
+        const result = await prisma.scheduledPayment.findMany({
+          where: {
+            userId,
+            status: "PENDING",
+            dueDate: {
+              gte: monthStart,
+              lte: monthEnd,
+            },
+          },
+        });
+        console.timeEnd(queryLabel);
+        return result;
+      })(),
+      (async () => {
+        const queryLabel = `${label} debt.findMany`;
+        console.time(queryLabel);
+        const result = await prisma.debt.findMany({
+          where: {
+            userId,
+            status: "ACTIVE",
+          },
+        });
+        console.timeEnd(queryLabel);
+        return result;
+      })(),
     ]);
 
   const currentBalance = accounts.reduce(
@@ -120,7 +152,7 @@ export async function getForecast(userId: string) {
     monthlySubscriptions + scheduledStandalonePayments + activeDebtPayments;
   const netChange = expectedIncome - expectedExpenses;
 
-  return {
+  const result = {
     monthLabel: getMonthLabel(monthStart),
     currentBalance,
     expectedIncome,
@@ -134,6 +166,9 @@ export async function getForecast(userId: string) {
       scheduledPayments.length > 0 ||
       debts.length > 0,
   };
+
+  console.timeEnd(label);
+  return result;
 }
 
 export type GetForecastResult = Awaited<ReturnType<typeof getForecast>>;

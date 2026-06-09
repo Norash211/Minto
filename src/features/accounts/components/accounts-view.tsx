@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import { formatMoney } from "@/lib/money";
 import type { GetAccountsResult } from "@/server/queries";
@@ -33,8 +34,9 @@ export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
       {accounts.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-3">
           {accounts.map((account) => (
-            <article
+            <Link
               key={account.id}
+              href={`/accounts/${account.id}`}
               className="rounded-2xl border border-border bg-card p-5"
             >
               <div
@@ -80,7 +82,7 @@ export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
                   </div>
                 </div>
               ) : null}
-            </article>
+            </Link>
           ))}
         </div>
       ) : (

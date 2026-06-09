@@ -1,7 +1,9 @@
 import { prisma } from "@/server/db/prisma";
 
 export async function getRecentTransactions(userId: string) {
-  return prisma.transaction.findMany({
+  const label = `[perf] getRecentTransactions ${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  console.time(label);
+  const transactions = await prisma.transaction.findMany({
     where: {
       userId,
     },
@@ -19,6 +21,9 @@ export async function getRecentTransactions(userId: string) {
     },
     take: 10,
   });
+  console.timeEnd(label);
+
+  return transactions;
 }
 
 export type GetRecentTransactionsResult = Awaited<ReturnType<typeof getRecentTransactions>>;

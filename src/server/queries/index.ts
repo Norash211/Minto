@@ -1,5 +1,7 @@
 export { getAccounts } from "./accounts/get-accounts";
 export type { GetAccountsResult } from "./accounts/get-accounts";
+export { getAccountDetail } from "./accounts/get-account-detail";
+export type { GetAccountDetailResult } from "./accounts/get-account-detail";
 
 export { getDashboardBuckets } from "./buckets/get-dashboard-buckets";
 export type { GetDashboardBucketsResult } from "./buckets/get-dashboard-buckets";
