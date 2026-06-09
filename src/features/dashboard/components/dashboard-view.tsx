@@ -1,14 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import {
   buckets,
-  committedMoney,
-  debtDueSoonMoney,
-  freeMoney,
-  monthlyForecast,
-  recentTransactions,
-  totalDebtOwed,
   totalLoansGiven,
-  totalMoney,
   upcomingPayments,
 } from "@/data/mock-data";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
@@ -16,10 +9,29 @@ import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
 import { RecentTransactions } from "@/features/transactions/components/recent-transactions";
 import { formatMoney } from "@/lib/money";
+import { getDemoUser } from "@/server/auth/get-demo-user";
+import { getAccounts, getDashboardSummary, getRecentTransactions } from "@/server/queries";
+import {
+  toDashboardDebtSummary,
+  toDashboardMoneySummary,
+  toDashboardMonthlyForecast,
+  toDashboardRecentTransactions,
+} from "../utils/dashboard-adapters";
 import { MoneySummary } from "./money-summary";
 import { UpcomingPayments } from "./upcoming-payments";
 
-export function DashboardView() {
+export async function DashboardView() {
+  const user = await getDemoUser();
+  const [summary, accounts, recentTransactions] = await Promise.all([
+    getDashboardSummary(user.id),
+    getAccounts(user.id),
+    getRecentTransactions(user.id),
+  ]);
+  const moneySummary = toDashboardMoneySummary(summary, accounts);
+  const debtSummary = toDashboardDebtSummary(summary);
+  const monthlyForecast = toDashboardMonthlyForecast(summary, recentTransactions);
+  const dashboardRecentTransactions = toDashboardRecentTransactions(recentTransactions).slice(0, 3);
+
   return (
     <AppShell>
       <div className="space-y-8">
@@ -38,15 +50,15 @@ export function DashboardView() {
         <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
           <div className="space-y-6">
             <MoneySummary
-              totalMoney={totalMoney}
-              committedMoney={committedMoney}
-              freeMoney={freeMoney}
+              totalMoney={moneySummary.totalMoney}
+              committedMoney={moneySummary.committedMoney}
+              freeMoney={moneySummary.freeMoney}
             />
 
             <div className="grid gap-4 md:grid-cols-2">
               <DebtsSummary
-                totalDebtOwed={totalDebtOwed}
-                debtDueSoonMoney={debtDueSoonMoney}
+                totalDebtOwed={debtSummary.totalDebtOwed}
+                debtDueSoonMoney={debtSummary.debtDueSoonMoney}
               />
               <LoansGivenSummary totalLoansGiven={totalLoansGiven} />
             </div>
@@ -98,7 +110,7 @@ export function DashboardView() {
             </section>
 
             <UpcomingPayments payments={upcomingPayments} />
-            <RecentTransactions transactions={recentTransactions.slice(0, 3)} />
+            <RecentTransactions transactions={dashboardRecentTransactions} />
           </aside>
         </div>
       </div>
