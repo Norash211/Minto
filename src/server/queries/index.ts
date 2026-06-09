@@ -9,6 +9,9 @@ export type { GetBucketsResult } from "./buckets/get-buckets";
 export { getDashboardSummary } from "./dashboard/get-dashboard-summary";
 export type { DashboardSummary } from "./dashboard/get-dashboard-summary";
 
+export { getForecast } from "./forecast/get-forecast";
+export type { GetForecastResult } from "./forecast/get-forecast";
+
 export { getDebtDueSoonSummary } from "./debts/get-debt-due-soon-summary";
 export type { DebtDueSoonSummary } from "./debts/get-debt-due-soon-summary";
 export { getDebts } from "./debts/get-debts";

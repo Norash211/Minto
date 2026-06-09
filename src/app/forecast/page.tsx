@@ -1,8 +1,10 @@
 import { ForecastView } from "@/features/forecast";
 import { requireCurrentUser } from "@/server/auth";
+import { getForecast } from "@/server/queries";
 
 export default async function ForecastPage() {
-  await requireCurrentUser();
+  const user = await requireCurrentUser();
+  const forecast = await getForecast(user.id);
 
-  return <ForecastView />;
+  return <ForecastView forecast={forecast} />;
 }
