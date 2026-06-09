@@ -1,8 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { recentTransactions } from "@/data/mock-data";
+import type { GetRecentTransactionsResult } from "@/server/queries";
 import { RecentTransactions } from "./recent-transactions";
+import { toTransactionsViewTransactions } from "../utils/transactions-adapters";
 
-export function TransactionsView() {
+type TransactionsViewProps = {
+  transactions: GetRecentTransactionsResult;
+};
+
+export function TransactionsView({ transactions: sourceTransactions }: TransactionsViewProps) {
+  const transactions = toTransactionsViewTransactions(sourceTransactions);
+
   return (
     <AppShell>
       <section className="mb-6">
@@ -12,7 +19,7 @@ export function TransactionsView() {
         </h1>
       </section>
 
-      <RecentTransactions transactions={recentTransactions} />
+      <RecentTransactions transactions={transactions} />
     </AppShell>
   );
 }
