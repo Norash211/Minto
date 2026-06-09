@@ -42,9 +42,44 @@ export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
               />
               <p className="text-sm text-muted">{account.institution}</p>
               <h2 className="mt-1 text-lg font-semibold text-ink">{account.name}</h2>
-              <p className="mt-5 text-2xl font-semibold tracking-[0] text-ink">
+              <p className="mt-5 text-sm text-muted">
+                {account.balanceLabel ?? "Saldo disponible"}
+              </p>
+              <p
+                className={`mt-1 text-2xl font-semibold tracking-[0] ${
+                  account.isCreditCard ? "text-debt" : "text-ink"
+                }`}
+              >
                 {formatMoney(account.balance)}
               </p>
+              {account.isCreditCard ? (
+                <div className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted">Disponible</span>
+                    <span className="font-medium text-income">
+                      {formatMoney(account.availableCredit ?? 0)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted">Límite</span>
+                    <span className="font-medium text-secondary">
+                      {formatMoney(account.creditLimit ?? 0)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted">Corte</span>
+                    <span className="font-medium text-secondary">
+                      {account.statementDay ? `Día ${account.statementDay}` : "Sin dato"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted">Pago límite</span>
+                    <span className="font-medium text-secondary">
+                      {account.paymentDueDay ? `Día ${account.paymentDueDay}` : "Sin dato"}
+                    </span>
+                  </div>
+                </div>
+              ) : null}
             </article>
           ))}
         </div>

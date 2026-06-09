@@ -28,13 +28,21 @@ function getRelatedAccounts(transaction: GetRecentTransactionsResult[number]) {
   return accounts.length > 0 ? accounts.join(" / ") : "Sin cuenta";
 }
 
+function getTransactionCategory(transaction: GetRecentTransactionsResult[number]) {
+  if (transaction.type === "OPENING_BALANCE") {
+    return "Saldo inicial";
+  }
+
+  return transaction.category ?? transaction.type;
+}
+
 export function toTransactionsViewTransactions(
   transactions: GetRecentTransactionsResult,
 ): Transaction[] {
   return transactions.map((transaction) => ({
     id: transaction.id,
     merchant: transaction.description,
-    category: transaction.category ?? transaction.type,
+    category: getTransactionCategory(transaction),
     amount: getSignedTransactionAmount(transaction),
     date: formatDate(transaction.date),
     account: getRelatedAccounts(transaction),

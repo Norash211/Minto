@@ -91,7 +91,11 @@ export async function getForecast(userId: string) {
     ]);
 
   const currentBalance = accounts.reduce(
-    (total, account) => total + decimalToNumber(account.currentBalance),
+    (total, account) => {
+      const balance = decimalToNumber(account.currentBalance);
+
+      return account.type === "CREDIT_CARD" ? total - balance : total + balance;
+    },
     0,
   );
   const expectedIncome = transactions

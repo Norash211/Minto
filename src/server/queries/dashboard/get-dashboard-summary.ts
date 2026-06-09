@@ -10,11 +10,24 @@ export type DashboardSummary = {
 };
 
 export async function getDashboardSummary(userId: string): Promise<DashboardSummary> {
-  const [accounts, debts, subscriptions, activeGoals] = await Promise.all([
+  const [assetAccounts, creditCards, debts, subscriptions, activeGoals] = await Promise.all([
     prisma.financialAccount.aggregate({
       where: {
         userId,
         isActive: true,
+        type: {
+          not: "CREDIT_CARD",
+        },
+      },
+      _sum: {
+        currentBalance: true,
+      },
+    }),
+    prisma.financialAccount.aggregate({
+      where: {
+        userId,
+        isActive: true,
+        type: "CREDIT_CARD",
       },
       _sum: {
         currentBalance: true,
@@ -47,8 +60,11 @@ export async function getDashboardSummary(userId: string): Promise<DashboardSumm
     }),
   ]);
 
+  const assetsTotal = assetAccounts._sum.currentBalance ?? new Prisma.Decimal(0);
+  const creditCardDebt = creditCards._sum.currentBalance ?? new Prisma.Decimal(0);
+
   return {
-    totalBalance: accounts._sum.currentBalance ?? new Prisma.Decimal(0),
+    totalBalance: assetsTotal.minus(creditCardDebt),
     totalDebt: debts._sum.currentBalance ?? new Prisma.Decimal(0),
     monthlySubscriptions: subscriptions._sum.amount ?? new Prisma.Decimal(0),
     activeGoals,

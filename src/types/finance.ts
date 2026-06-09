@@ -5,6 +5,12 @@ export type Account = {
   name: string;
   institution: string;
   balance: MoneyAmount;
+  balanceLabel?: string;
+  availableCredit?: MoneyAmount;
+  creditLimit?: MoneyAmount;
+  statementDay?: number;
+  paymentDueDay?: number;
+  isCreditCard?: boolean;
   tone: "sage" | "clay" | "gold" | "ink";
 };
 

@@ -19,16 +19,31 @@ const accountTypeTones = {
   INVESTMENT: "sage",
 } satisfies Record<GetAccountsResult[number]["type"], Account["tone"]>;
 
-function decimalToNumber(value: { toNumber(): number }) {
-  return value.toNumber();
+function decimalToNumber(value: { toNumber(): number } | null | undefined) {
+  return value ? value.toNumber() : undefined;
 }
 
 export function toAccountsViewAccounts(accounts: GetAccountsResult): Account[] {
-  return accounts.map((account) => ({
-    id: account.id,
-    name: account.name,
-    institution: accountTypeLabels[account.type],
-    balance: decimalToNumber(account.currentBalance),
-    tone: accountTypeTones[account.type],
-  }));
+  return accounts.map((account) => {
+    const balance = decimalToNumber(account.currentBalance) ?? 0;
+    const creditLimit = decimalToNumber(account.creditLimit);
+    const isCreditCard = account.type === "CREDIT_CARD";
+
+    return {
+      id: account.id,
+      name: account.name,
+      institution: accountTypeLabels[account.type],
+      balance,
+      balanceLabel: isCreditCard ? "Deuda actual" : "Saldo disponible",
+      availableCredit:
+        isCreditCard && creditLimit !== undefined
+          ? Math.max(creditLimit - balance, 0)
+          : undefined,
+      creditLimit,
+      statementDay: account.statementDay ?? undefined,
+      paymentDueDay: account.paymentDueDay ?? undefined,
+      isCreditCard,
+      tone: accountTypeTones[account.type],
+    };
+  });
 }

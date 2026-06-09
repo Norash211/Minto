@@ -44,13 +44,25 @@ function getSignedTransactionAmount(transaction: GetRecentTransactionsResult[num
   return inAmount - outAmount;
 }
 
+function getTransactionCategory(transaction: GetRecentTransactionsResult[number]) {
+  if (transaction.type === "OPENING_BALANCE") {
+    return "Saldo inicial";
+  }
+
+  return transaction.category ?? transaction.type;
+}
+
 export function toDashboardMoneySummary(
   summary: DashboardSummary,
   accounts: GetAccountsResult,
 ) {
   const totalMoney =
     accounts.length > 0
-      ? accounts.reduce((total, account) => total + decimalToNumber(account.currentBalance), 0)
+      ? accounts.reduce((total, account) => {
+          const balance = decimalToNumber(account.currentBalance);
+
+          return account.type === "CREDIT_CARD" ? total - balance : total + balance;
+        }, 0)
       : decimalToNumber(summary.totalBalance);
   const committedMoney =
     decimalToNumber(summary.totalDebt) + decimalToNumber(summary.monthlySubscriptions);
@@ -103,7 +115,7 @@ export function toDashboardRecentTransactions(
   return transactions.map((transaction) => ({
     id: transaction.id,
     merchant: transaction.description,
-    category: transaction.category ?? transaction.type,
+    category: getTransactionCategory(transaction),
     amount: getSignedTransactionAmount(transaction),
     date: formatDate(transaction.date),
     account: transaction.entries
