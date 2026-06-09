@@ -16,6 +16,8 @@ export type { GetDebtsResult } from "./debts/get-debts";
 
 export { getLoansGivenSummary } from "./loans-given/get-loans-given-summary";
 export type { LoansGivenSummary } from "./loans-given/get-loans-given-summary";
+export { getLoansGiven } from "./loans-given/get-loans-given";
+export type { GetLoansGivenResult } from "./loans-given/get-loans-given";
 
 export { getUpcomingPayments } from "./scheduled-payments/get-upcoming-payments";
 export type { GetUpcomingPaymentsResult } from "./scheduled-payments/get-upcoming-payments";

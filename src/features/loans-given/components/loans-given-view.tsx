@@ -1,8 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { loansGiven } from "@/data/mock-data";
+import type { GetLoansGivenResult } from "@/server/queries";
+import { toLoansGivenViewLoans } from "../utils/loans-given-adapters";
 import { LoansGivenManager } from "./loans-given-manager";
 
-export function LoansGivenView() {
+type LoansGivenViewProps = {
+  loansGiven: GetLoansGivenResult;
+};
+
+export function LoansGivenView({ loansGiven: sourceLoansGiven }: LoansGivenViewProps) {
+  const loansGiven = toLoansGivenViewLoans(sourceLoansGiven);
+
   return (
     <AppShell>
       <section className="mb-6">
