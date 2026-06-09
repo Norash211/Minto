@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
-import { accounts } from "@/data/mock-data";
 import { formatMoney } from "@/lib/money";
+import type { GetAccountsResult } from "@/server/queries";
+import { toAccountsViewAccounts } from "../utils/accounts-adapters";
 
 const toneClasses = {
   sage: "bg-sage",
@@ -9,7 +10,13 @@ const toneClasses = {
   ink: "bg-ink",
 };
 
-export function AccountsView() {
+type AccountsViewProps = {
+  accounts: GetAccountsResult;
+};
+
+export function AccountsView({ accounts: sourceAccounts }: AccountsViewProps) {
+  const accounts = toAccountsViewAccounts(sourceAccounts);
+
   return (
     <AppShell>
       <section className="mb-6">
