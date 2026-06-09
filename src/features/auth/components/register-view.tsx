@@ -3,9 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useActionState } from "react";
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, UserRound } from "lucide-react";
 import { formatMoney } from "@/lib/money";
-import { loginAction } from "@/server/auth/actions";
+import { registerAction } from "@/server/auth/actions";
 import type { LoginPreviewMetric } from "../types";
 
 const previewMetrics: LoginPreviewMetric[] = [
@@ -29,8 +29,8 @@ const previewMetrics: LoginPreviewMetric[] = [
   },
 ];
 
-export function LoginView() {
-  const [state, formAction, isPending] = useActionState(loginAction, {});
+export function RegisterView() {
+  const [state, formAction, isPending] = useActionState(registerAction, {});
 
   return (
     <main className="min-h-screen w-full bg-background p-4 text-ink sm:p-6 lg:p-8">
@@ -55,12 +55,12 @@ export function LoginView() {
             </Link>
 
             <div className="max-w-2xl">
-              <p className="text-sm font-medium text-secondary">Acceso privado</p>
+              <p className="text-sm font-medium text-secondary">Cuenta privada</p>
               <h1 className="mt-3 text-3xl font-semibold tracking-[0] text-ink sm:text-4xl">
-                Bienvenido a Minto
+                Crea tu espacio en Minto
               </h1>
               <p className="mt-4 max-w-xl text-base leading-7 text-muted">
-                Claridad financiera para saber cuánto dinero realmente puedes usar.
+                Empieza con una base clara para entender tu dinero real.
               </p>
             </div>
           </div>
@@ -111,14 +111,34 @@ export function LoginView() {
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-soft sm:p-6">
             <div className="mb-6">
               <h2 className="text-2xl font-semibold tracking-[0] text-ink">
-                Iniciar sesión
+                Crear cuenta
               </h2>
               <p className="mt-2 text-sm leading-6 text-muted">
-                Entra a tu espacio financiero personal.
+                Configura tu acceso privado a Minto.
               </p>
             </div>
 
             <form action={formAction} className="space-y-4">
+              <label className="block space-y-2">
+                <span className="text-sm text-secondary">Nombre</span>
+                <span className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 transition focus-within:border-primary">
+                  <UserRound
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 text-muted"
+                    strokeWidth={1.8}
+                  />
+                  <input
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    required
+                    minLength={2}
+                    className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+                    placeholder="Tu nombre"
+                  />
+                </span>
+              </label>
+
               <label className="block space-y-2">
                 <span className="text-sm text-secondary">Email</span>
                 <span className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 transition focus-within:border-primary">
@@ -149,7 +169,7 @@ export function LoginView() {
                   <input
                     name="password"
                     type="password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     required
                     minLength={8}
                     className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
@@ -169,17 +189,17 @@ export function LoginView() {
                 disabled={isPending}
                 className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isPending ? "Entrando..." : "Iniciar sesión"}
+                {isPending ? "Creando cuenta..." : "Crear cuenta"}
               </button>
             </form>
 
             <p className="mt-6 text-center text-sm text-muted">
-              ¿No tienes cuenta?{" "}
+              ¿Ya tienes cuenta?{" "}
               <Link
-                href="/register"
+                href="/login"
                 className="font-medium text-secondary transition hover:text-ink"
               >
-                Crear cuenta
+                Iniciar sesión
               </Link>
             </p>
           </div>

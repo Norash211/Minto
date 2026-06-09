@@ -15,7 +15,10 @@ const invalidCredentialsError = "Email o contraseña inválidos.";
 const registerError = "No pudimos crear la cuenta. Revisa los datos e inténtalo de nuevo.";
 const validationError = "Revisa los datos e inténtalo de nuevo.";
 
-export async function registerAction(formData: FormData): Promise<AuthActionState> {
+export async function registerAction(
+  _previousState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
@@ -64,7 +67,10 @@ export async function registerAction(formData: FormData): Promise<AuthActionStat
   redirect("/");
 }
 
-export async function loginAction(formData: FormData): Promise<AuthActionState> {
+export async function loginAction(
+  _previousState: AuthActionState,
+  formData: FormData,
+): Promise<AuthActionState> {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
