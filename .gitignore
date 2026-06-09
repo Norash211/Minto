@@ -15,6 +15,11 @@ out/
 .env
 .env.local
 .env.*.local
+.env.supabase
+.env.production
+.env.development
+.env.supabase
+.env.*.local
 
 # os
 .DS_Store
