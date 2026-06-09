@@ -1,10 +1,11 @@
 import { AppShell } from "@/components/layout/app-shell";
+import { LogoutButton } from "@/features/auth";
 import { BucketCard } from "@/features/buckets/components/bucket-card";
 import { DebtsSummary } from "@/features/debts/components/debts-summary";
 import { LoansGivenSummary } from "@/features/loans-given/components/loans-given-summary";
 import { RecentTransactions } from "@/features/transactions/components/recent-transactions";
 import { formatMoney } from "@/lib/money";
-import { getDemoUser } from "@/server/auth/get-demo-user";
+import { requireCurrentUser } from "@/server/auth";
 import {
   getAccounts,
   getDashboardBuckets,
@@ -27,7 +28,7 @@ import { MoneySummary } from "./money-summary";
 import { UpcomingPayments } from "./upcoming-payments";
 
 export async function DashboardView() {
-  const user = await getDemoUser();
+  const user = await requireCurrentUser();
   const [
     summary,
     accounts,
@@ -63,9 +64,12 @@ export async function DashboardView() {
               Entiende tu dinero de hoy
             </h1>
           </div>
-          <p className="max-w-md text-sm leading-6 text-muted">
-            Una vista limpia de lo disponible, lo comprometido y lo que viene.
-          </p>
+          <div className="flex flex-col items-start gap-3 sm:items-end">
+            <p className="max-w-md text-sm leading-6 text-muted sm:text-right">
+              Una vista limpia de lo disponible, lo comprometido y lo que viene.
+            </p>
+            <LogoutButton />
+          </div>
         </header>
 
         <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_400px]">
